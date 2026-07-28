@@ -80,7 +80,9 @@ create table if not exists conversas (
 
 create index if not exists conversas_cliente_idx on conversas (cliente_id, data desc);
 
--- RLS: sistema de uma usuária só — quem estiver autenticado acessa tudo.
+-- RLS: sistema de uma usuária só. A chave publicável do Supabase fica visível
+-- no navegador, então a política não olha só "está autenticado?" — ela confere
+-- o e-mail da consultora. Se o e-mail de acesso mudar, mude aqui também.
 alter table clientes enable row level security;
 alter table vendas enable row level security;
 alter table leads enable row level security;
@@ -92,10 +94,12 @@ do $$
 declare t text;
 begin
   foreach t in array array['clientes','vendas','leads','atividade_semanal','config','conversas'] loop
-    execute format('drop policy if exists %I on %I', 'acesso_autenticado_' || t, t);
+    execute format('drop policy if exists %I on %I', 'acesso_consultora_' || t, t);
     execute format(
-      'create policy %I on %I for all to authenticated using (true) with check (true)',
-      'acesso_autenticado_' || t, t
+      'create policy %I on %I for all to authenticated
+         using (auth.jwt() ->> ''email'' = ''consultora@minhasvendas.com.br'')
+         with check (auth.jwt() ->> ''email'' = ''consultora@minhasvendas.com.br'')',
+      'acesso_consultora_' || t, t
     );
   end loop;
 end $$;

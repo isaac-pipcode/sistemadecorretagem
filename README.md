@@ -13,7 +13,7 @@ Tudo em português, pensado para celular, com letra grande e botões grandes.
 
 | | |
 |---|---|
-| **Endereço** | a URL do projeto na Vercel (veja "Publicar na Vercel" abaixo) |
+| **Endereço** | <https://minhas-vendas-consorcios.vercel.app> |
 | **E-mail** | `consultora@minhasvendas.com.br` |
 | **Senha inicial** | `Vendas2026!` |
 
@@ -119,23 +119,41 @@ Os dados originais das vendas também estão em `db/vendas-caderno.json`.
 
 ## Publicar na Vercel
 
-**Primeira publicação**
+O projeto **já está publicado** em
+<https://minhas-vendas-consorcios.vercel.app> (time `pipcode`, projeto
+`minhas-vendas-consorcios`). As duas variáveis de ambiente estão no arquivo
+`.env.production`, que vai junto no deploy — são chaves públicas, protegidas
+pelo login e pelo RLS do banco. Se preferir guardá-las no painel da Vercel
+(*Settings → Environment Variables*), elas têm prioridade sobre o arquivo.
 
-1. Em [vercel.com/new](https://vercel.com/new), importe este repositório.
-2. Framework: *Next.js* (a Vercel detecta sozinha). Não é preciso mudar nada em
-   build ou output.
-3. Em *Environment Variables*, cadastre `NEXT_PUBLIC_SUPABASE_URL` e
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-4. Clique em **Deploy**.
+**Ligar o repositório do GitHub (recomendado, faz uma vez só)**
+
+O projeto foi criado enviando os arquivos direto para a Vercel, então ele ainda
+não publica sozinho a cada `git push`. Para ligar:
+
+1. Painel da Vercel → projeto `minhas-vendas-consorcios` → *Settings* → *Git*.
+2. **Connect Git Repository** → escolha `isaac-pipcode/sistemadecorretagem`.
+3. Escolha a branch de produção.
+
+Feito isso, todo `git push` publica sozinho.
 
 **Publicar de novo depois de uma mudança (re-deploy)**
 
-- Jeito automático: dê `git push` na branch principal. A Vercel publica sozinha.
-- Jeito manual: no painel da Vercel, *Deployments* → nos três pontinhos do
-  último deploy → **Redeploy**.
+- Com o Git ligado: `git push` — a Vercel publica sozinha.
+- Pelo painel: *Deployments* → três pontinhos do último deploy → **Redeploy**.
 - Pela linha de comando: `npx vercel --prod` dentro da pasta do projeto.
 
-Se mudar alguma variável de ambiente, é preciso **re-deployar** para ela valer.
+Se mudar alguma variável de ambiente pelo painel, é preciso **re-deployar**
+para ela valer.
+
+**Uma recomendação de segurança**
+
+No Supabase, em *Authentication → Sign In / Providers → Email*, desligue
+**Allow new users to sign up**. O sistema é de uma usuária só e não tem tela de
+cadastro; com o cadastro desligado, ninguém consegue criar conta por fora. As
+políticas de RLS já conferem o e-mail da consultora, então mesmo uma conta
+criada por fora não enxergaria nenhum dado — a recomendação é só uma segunda
+tranca.
 
 ---
 
