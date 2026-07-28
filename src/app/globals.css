@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/*
+  Sistema visual: letra grande, contraste alto, uma coluna no celular.
+  Sem modo escuro de propósito (ver seção 8 da especificação).
+*/
+@theme {
+  --color-fundo: #f4f2ee;
+  --color-carta: #ffffff;
+  --color-tinta: #14161a;
+  --color-tinta-suave: #4a4f57;
+  --color-borda: #d6d2ca;
+
+  --color-marca: #123a6b;
+  --color-marca-clara: #e8eef7;
+  --color-verde: #10643a;
+  --color-verde-claro: #e2f1e8;
+  --color-ambar: #8a5200;
+  --color-ambar-claro: #fbf0dc;
+  --color-vermelho: #9e1b16;
+  --color-vermelho-claro: #fbe6e5;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  font-size: 17px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-tinta);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+button,
+select,
+input,
+textarea {
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+@utility carta {
+  background: var(--color-carta);
+  border: 2px solid var(--color-borda);
+  border-radius: 1rem;
+}
+
+@utility botao-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-align: center;
+}
+
+@utility botao-principal {
+  background: var(--color-marca);
+  color: #ffffff;
+}
+
+@utility botao-secundario {
+  background: #ffffff;
+  color: var(--color-marca);
+  border-color: var(--color-marca);
+}
+
+@utility botao-neutro {
+  background: #ffffff;
+  color: var(--color-tinta);
+  border-color: var(--color-borda);
+}
+
+@utility campo {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.625rem 0.75rem;
+  border: 2px solid var(--color-borda);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: var(--color-tinta);
+}
+
+@utility rotulo {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.375rem;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--color-marca);
+  outline-offset: 2px;
+}
+
+/* Números tabulares deixam as colunas de dinheiro alinhadas */
+.numeros {
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
