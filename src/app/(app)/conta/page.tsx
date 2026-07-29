@@ -9,7 +9,7 @@ export default async function PaginaConta() {
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <h1 className="text-2xl font-black">Minha conta</h1>
+      <h1 className="text-2xl font-black text-marca">Minha conta</h1>
 
       <div className="carta p-4">
         <p className="font-bold text-tinta-suave">Meu e-mail de acesso</p>
@@ -17,7 +17,7 @@ export default async function PaginaConta() {
       </div>
 
       <section className="carta p-4">
-        <h2 className="text-xl font-black">Trocar a senha</h2>
+        <h2 className="text-xl font-black text-marca">Trocar a senha</h2>
         <p className="text-tinta-suave">
           Escolha uma senha com 8 letras ou números, no mínimo. Anote em um
           lugar seguro.

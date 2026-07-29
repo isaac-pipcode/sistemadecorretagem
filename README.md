@@ -52,6 +52,33 @@ O medidor da meta do mês fica no topo, em todas as abas.
 
 ---
 
+## Identidade visual
+
+A interface segue a marca da Ademicon: **vermelho institucional sobre branco**,
+com grafite como cor de apoio.
+
+| Uso | Cor |
+|---|---|
+| Vermelho da marca (faixa do topo, botão principal, números em alerta) | `#c4161c` |
+| Vermelho escuro (degradê da faixa, borda do botão) | `#8e0f14` |
+| Grafite de apoio (segunda série dos gráficos, etiquetas neutras) | `#344054` |
+| Fundo da tela | `#f6f3f3` |
+| Texto | `#1a1414` / `#5a4d4d` |
+
+Todas as cores saem do bloco `@theme` no topo de `src/app/globals.css` — para
+acertar o tom exato do manual da marca, **mude só aquele bloco** e o sistema
+inteiro acompanha (cabeçalho, botões, gráficos, etiquetas).
+
+O selo do cabeçalho é uma versão simplificada do símbolo (telhado branco em
+quadrado vermelho), desenhada em SVG dentro de `src/componentes/marca.tsx`.
+Quando tiver o arquivo oficial do logotipo, salve como `public/ademicon.svg` e
+troque o `<Selo />` por `<img src="/ademicon.svg" alt="" />` — é a única
+mudança necessária.
+
+Contraste conferido em todas as combinações (WCAG AA): branco sobre o vermelho
+da marca e vermelho da marca sobre branco ficam em 5,9:1; o texto de leitura,
+em 16,4:1.
+
 ## Como o sistema é feito
 
 - **Next.js 16 (App Router) + TypeScript**, publicado na **Vercel**.

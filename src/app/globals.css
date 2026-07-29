@@ -1,24 +1,52 @@
 @import "tailwindcss";
 
 /*
-  Sistema visual: letra grande, contraste alto, uma coluna no celular.
-  Sem modo escuro de propósito (ver seção 8 da especificação).
+  ── Identidade visual ─────────────────────────────────────────────────
+  Paleta da Ademicon: vermelho institucional sobre branco, grafite de apoio.
+  Todas as cores da interface saem daqui — para ajustar o tom exato da
+  marca, mude só este bloco.
+
+  Contraste conferido (WCAG AA):
+    tinta        sobre carta   16,4:1      marca  sobre carta    5,9:1
+    tinta-suave  sobre carta    7,3:1      branco sobre marca    5,9:1
+    verde        sobre carta    5,2:1      ambar  sobre carta    5,1:1
 */
 @theme {
-  --color-fundo: #f4f2ee;
+  /* Superfícies */
+  --color-fundo: #f6f3f3;
   --color-carta: #ffffff;
-  --color-tinta: #14161a;
-  --color-tinta-suave: #4a4f57;
-  --color-borda: #d6d2ca;
+  --color-borda: #e6dede;
+  --color-borda-forte: #cfc2c2;
 
-  --color-marca: #123a6b;
-  --color-marca-clara: #e8eef7;
-  --color-verde: #10643a;
-  --color-verde-claro: #e2f1e8;
-  --color-ambar: #8a5200;
-  --color-ambar-claro: #fbf0dc;
-  --color-vermelho: #9e1b16;
-  --color-vermelho-claro: #fbe6e5;
+  /* Texto */
+  --color-tinta: #1a1414;
+  --color-tinta-suave: #5a4d4d;
+
+  /* Vermelho institucional Ademicon */
+  --color-marca: #c4161c;
+  --color-marca-escura: #8e0f14;
+  --color-marca-viva: #d5262c;
+  --color-marca-clara: #fdecec;
+
+  /* Grafite de apoio (contraponto ao vermelho) */
+  --color-grafite: #344054;
+  --color-grafite-claro: #eceff3;
+
+  /* Situações — o vermelho da marca também sinaliza urgência */
+  --color-verde: #067647;
+  --color-verde-claro: #e7f6ee;
+  --color-ambar: #b54708;
+  --color-ambar-claro: #fef0c7;
+  --color-vermelho: #c4161c;
+  --color-vermelho-claro: #fdecec;
+
+  /* Cores dos segmentos nos gráficos */
+  --color-imoveis: #c4161c;
+  --color-motos: #344054;
+  --color-servicos: #b54708;
+  --color-agro: #067647;
+
+  --radius-carta: 1.25rem;
 }
 
 :root {
@@ -34,7 +62,12 @@ body {
   background: var(--color-fundo);
   color: var(--color-tinta);
   font-family:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial,
     sans-serif;
   font-size: 1rem;
   line-height: 1.5;
@@ -48,11 +81,36 @@ textarea {
   font-family: inherit;
 }
 
+/* ── Superfícies ─────────────────────────────────────────────────── */
+
 @utility carta {
   background: var(--color-carta);
-  border: 2px solid var(--color-borda);
-  border-radius: 1rem;
+  border: 1px solid var(--color-borda);
+  border-radius: var(--radius-carta);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
 }
+
+/* Cartão de leitura rápida: barrinha colorida à esquerda */
+@utility carta-destacada {
+  background: var(--color-carta);
+  border: 1px solid var(--color-borda);
+  border-left: 6px solid var(--color-marca);
+  border-radius: var(--radius-carta);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+/* Faixa azul do cabeçalho e da tela de entrada */
+@utility faixa-marca {
+  background: radial-gradient(
+    130% 100% at 50% 0%,
+    var(--color-marca-viva) 0%,
+    var(--color-marca) 52%,
+    var(--color-marca-escura) 100%
+  );
+  color: #ffffff;
+}
+
+/* ── Botões ──────────────────────────────────────────────────────── */
 
 @utility botao-base {
   display: inline-flex;
@@ -60,18 +118,23 @@ textarea {
   justify-content: center;
   gap: 0.5rem;
   min-height: 48px;
-  padding: 0.625rem 1.125rem;
-  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.875rem;
   font-weight: 700;
   line-height: 1.2;
   border: 2px solid transparent;
   cursor: pointer;
   text-align: center;
+  transition:
+    filter 120ms ease,
+    box-shadow 120ms ease;
 }
 
 @utility botao-principal {
   background: var(--color-marca);
   color: #ffffff;
+  border-color: var(--color-marca-escura);
+  box-shadow: 0 1px 2px rgba(26, 20, 20, 0.15);
 }
 
 @utility botao-secundario {
@@ -83,24 +146,46 @@ textarea {
 @utility botao-neutro {
   background: #ffffff;
   color: var(--color-tinta);
-  border-color: var(--color-borda);
+  border-color: var(--color-borda-forte);
 }
+
+@media (hover: hover) {
+  .botao-base:hover:not(:disabled) {
+    filter: brightness(0.96);
+  }
+}
+
+/* ── Formulários ─────────────────────────────────────────────────── */
 
 @utility campo {
   display: block;
   width: 100%;
   min-height: 48px;
-  padding: 0.625rem 0.75rem;
-  border: 2px solid var(--color-borda);
-  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border: 2px solid var(--color-borda-forte);
+  border-radius: 0.875rem;
   background: #ffffff;
   color: var(--color-tinta);
+}
+
+.campo:focus {
+  border-color: var(--color-marca);
 }
 
 @utility rotulo {
   display: block;
   font-weight: 700;
   margin-bottom: 0.375rem;
+}
+
+/* Etiqueta pequena de situação (Ativa, Contemplada, …) */
+@utility etiqueta {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.125rem 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 button:focus-visible,
@@ -111,6 +196,12 @@ textarea:focus-visible,
 [tabindex]:focus-visible {
   outline: 3px solid var(--color-marca);
   outline-offset: 2px;
+}
+
+/* A faixa azul precisa de um anel claro para o foco aparecer */
+.faixa-marca a:focus-visible,
+.faixa-marca button:focus-visible {
+  outline-color: #ffffff;
 }
 
 /* Números tabulares deixam as colunas de dinheiro alinhadas */

@@ -38,7 +38,7 @@ function RotuloAcima(props: unknown) {
       textAnchor="middle"
       fontSize={15}
       fontWeight={700}
-      fill="#14161a"
+      fill="#1a1414"
     >
       {compactoSemMoeda(numero)}
     </text>
@@ -63,38 +63,38 @@ export function GraficoMeses({ dados, meta }: Props) {
               margin={{ top: 26, right: 12, left: 4, bottom: 4 }}
               barCategoryGap="18%"
             >
-              <CartesianGrid stroke="#d6d2ca" vertical={false} />
+              <CartesianGrid stroke="#e6dede" vertical={false} />
               <XAxis
                 dataKey="rotulo"
-                tick={{ fontSize: 15, fill: "#14161a", fontWeight: 700 }}
+                tick={{ fontSize: 15, fill: "#1a1414", fontWeight: 700 }}
                 tickLine={false}
-                axisLine={{ stroke: "#d6d2ca" }}
+                axisLine={{ stroke: "#e6dede" }}
                 interval={0}
               />
               <YAxis
                 domain={[0, Math.ceil((maior * 1.15) / 250000) * 250000]}
                 tickFormatter={(v: number) => reaisCompacto(v)}
-                tick={{ fontSize: 15, fill: "#4a4f57" }}
+                tick={{ fontSize: 15, fill: "#5a4d4d" }}
                 tickLine={false}
                 axisLine={false}
                 width={80}
               />
               <ReferenceLine
                 y={meta}
-                stroke="#9e1b16"
+                stroke="#344054"
                 strokeWidth={3}
                 strokeDasharray="8 6"
                 label={{
                   value: `Meta ${reaisCompacto(meta)}`,
                   position: "insideTopLeft",
-                  fill: "#9e1b16",
+                  fill: "#344054",
                   fontSize: 15,
                   fontWeight: 700,
                 }}
               />
               <Bar
                 dataKey="valor"
-                fill="#123a6b"
+                fill="#c4161c"
                 radius={[6, 6, 0, 0]}
                 isAnimationActive={false}
               >

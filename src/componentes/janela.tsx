@@ -31,7 +31,7 @@ export function Janela({ titulo, aoFechar, children }: Props) {
     >
       <div className="flex max-h-dvh w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border-2 border-borda bg-carta sm:rounded-2xl">
         <div className="flex items-center justify-between gap-3 border-b-2 border-borda px-4 py-3">
-          <h2 className="text-xl font-black">{titulo}</h2>
+          <h2 className="text-xl font-black text-marca">{titulo}</h2>
           <button
             type="button"
             onClick={aoFechar}

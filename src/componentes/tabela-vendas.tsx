@@ -12,12 +12,28 @@ type Props = { vendas: Venda[]; anos: string[] };
 
 type Ordem = "data" | "valor";
 
-const CORES_STATUS: Record<string, string> = {
-  Ativa: "bg-carta",
-  Contemplada: "bg-verde-claro",
-  Desistiu: "bg-ambar-claro",
-  Inválida: "bg-fundo text-tinta-suave line-through decoration-1",
+/* Situação vira etiqueta colorida — a cor sozinha nunca carrega o sentido. */
+const ETIQUETA_STATUS: Record<string, string> = {
+  Ativa: "bg-grafite-claro text-grafite",
+  Contemplada: "bg-verde-claro text-verde",
+  Desistiu: "bg-ambar-claro text-ambar",
+  Inválida: "bg-fundo text-tinta-suave",
 };
+
+const TRILHO_STATUS: Record<string, string> = {
+  Ativa: "border-l-grafite",
+  Contemplada: "border-l-verde",
+  Desistiu: "border-l-ambar",
+  Inválida: "border-l-borda-forte",
+};
+
+function EtiquetaStatus({ status }: { status: string }) {
+  return (
+    <span className={`etiqueta ${ETIQUETA_STATUS[status] ?? ""}`}>
+      {status}
+    </span>
+  );
+}
 
 export function TabelaVendas({ vendas, anos }: Props) {
   const [ano, setAno] = useState("todos");
@@ -55,7 +71,7 @@ export function TabelaVendas({ vendas, anos }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black">Vendas</h1>
+        <h1 className="text-2xl font-black text-marca">Vendas</h1>
         <button
           type="button"
           onClick={() => setCriando(true)}
@@ -153,7 +169,7 @@ export function TabelaVendas({ vendas, anos }: Props) {
         <p className="text-base font-bold text-tinta-suave">
           Total do que está aparecendo (sem as inválidas)
         </p>
-        <p className="numeros text-[28px] leading-tight font-black sm:text-[34px]">
+        <p className="numeros text-[28px] leading-tight font-black text-marca sm:text-[34px]">
           {reais(total)}
         </p>
         <p className="numeros font-bold text-tinta-suave">
@@ -168,14 +184,17 @@ export function TabelaVendas({ vendas, anos }: Props) {
         {filtradas.map((v) => (
           <li
             key={v.id}
-            className={`carta p-4 ${CORES_STATUS[v.status] ?? "bg-carta"}`}
+            className={`carta-destacada p-4 ${TRILHO_STATUS[v.status] ?? ""}`}
           >
             <div className="flex items-baseline justify-between gap-2">
               <p className="text-lg font-black">{v.nome_cliente}</p>
               <p className="numeros text-lg font-black">{reais(v.valor)}</p>
             </div>
-            <p className="numeros text-tinta-suave">
-              {v.segmento} · {dataBr(v.data_venda)} · {v.status}
+            <p className="numeros mt-1 flex flex-wrap items-center gap-2 text-tinta-suave">
+              <EtiquetaStatus status={v.status} />
+              <span>
+                {v.segmento} · {dataBr(v.data_venda)}
+              </span>
             </p>
             <p className="numeros text-tinta-suave">
               Grupo {v.grupo ?? "—"} · Cota {v.cota ?? "—"}
@@ -205,7 +224,7 @@ export function TabelaVendas({ vendas, anos }: Props) {
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">Todas as vendas registradas</caption>
           <thead>
-            <tr className="border-b-2 border-borda bg-fundo">
+            <tr className="border-b border-borda bg-fundo">
               {[
                 "Nome",
                 "Segmento",
@@ -226,12 +245,7 @@ export function TabelaVendas({ vendas, anos }: Props) {
           </thead>
           <tbody>
             {filtradas.map((v) => (
-              <tr
-                key={v.id}
-                className={`border-b-2 border-borda align-top ${
-                  CORES_STATUS[v.status] ?? ""
-                }`}
-              >
+              <tr key={v.id} className="border-b border-borda align-top">
                 <td className="px-3 py-3 font-bold">{v.nome_cliente}</td>
                 <td className="px-3 py-3">{v.segmento}</td>
                 <td className="numeros px-3 py-3">{v.grupo ?? "—"}</td>
@@ -242,7 +256,9 @@ export function TabelaVendas({ vendas, anos }: Props) {
                 <td className="numeros px-3 py-3 whitespace-nowrap">
                   {dataBr(v.data_venda)}
                 </td>
-                <td className="px-3 py-3">{v.status}</td>
+                <td className="px-3 py-3">
+                  <EtiquetaStatus status={v.status} />
+                </td>
                 <td className="px-3 py-3">{v.origem ?? "—"}</td>
                 <td className="max-w-64 px-3 py-3">{v.observacoes ?? ""}</td>
                 <td className="px-3 py-3">

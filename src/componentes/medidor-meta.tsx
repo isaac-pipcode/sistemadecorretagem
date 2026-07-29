@@ -6,26 +6,37 @@ type Props = {
   cotas: number;
 };
 
-/** Barra de progresso da meta do mês — aparece em todas as abas. */
+/**
+ * Medidor da meta do mês — o número mais importante do sistema.
+ * Fica em cima da faixa azul do cabeçalho, em todas as abas.
+ */
 export function MedidorMeta({ valor, meta, cotas }: Props) {
   const percentual = meta > 0 ? (valor / meta) * 100 : 0;
   const largura = Math.min(100, Math.max(0, percentual));
   const bateu = valor >= meta;
+  const faltam = Math.max(0, meta - valor);
 
   return (
-    <div className="mt-2">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-        <p className="text-base font-bold">
-          Meta do mês:{" "}
-          <span className="numeros text-tinta-suave">{reais(meta)}</span>
-        </p>
-        <p className="numeros text-base font-bold">
-          {numero(cotas)} {cotas === 1 ? "cota" : "cotas"}
+    <div className="rounded-2xl bg-white/10 p-3 ring-1 ring-white/20 backdrop-blur-sm sm:p-4">
+      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
+        <div>
+          <p className="text-base font-bold text-white/80">Vendido neste mês</p>
+          <p className="numeros text-[28px] leading-none font-black text-white sm:text-[36px]">
+            {reais(valor)}
+          </p>
+        </div>
+        <p
+          className={`numeros shrink-0 rounded-full px-3 py-1 text-lg font-black ${
+            bateu ? "bg-verde text-white" : "bg-white text-marca"
+          }`}
+        >
+          {percentual.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}% da
+          meta
         </p>
       </div>
 
       <div
-        className="mt-1 h-7 w-full overflow-hidden rounded-full border-2 border-borda bg-fundo"
+        className="mt-2 h-4 w-full overflow-hidden rounded-full bg-white/25"
         role="progressbar"
         aria-valuenow={Math.round(percentual)}
         aria-valuemin={0}
@@ -33,19 +44,16 @@ export function MedidorMeta({ valor, meta, cotas }: Props) {
         aria-label="Quanto já vendi da meta do mês"
       >
         <div
-          className={`h-full ${bateu ? "bg-verde" : "bg-marca"}`}
+          className={`h-full rounded-full ${bateu ? "bg-verde" : "bg-white"}`}
           style={{ width: `${largura}%` }}
         />
       </div>
 
-      <p className="numeros mt-1 text-lg font-black">
-        {reais(valor)}{" "}
-        <span
-          className={`font-bold ${bateu ? "text-verde" : "text-tinta-suave"}`}
-        >
-          ({percentual.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}%
-          da meta)
-        </span>
+      <p className="numeros mt-2 text-base font-bold text-white/85">
+        {numero(cotas)} {cotas === 1 ? "cota" : "cotas"} ·{" "}
+        {bateu
+          ? "meta do mês batida!"
+          : `faltam ${reais(faltam)} para a meta`}
       </p>
     </div>
   );

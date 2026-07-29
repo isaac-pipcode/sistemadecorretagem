@@ -5,9 +5,15 @@ type Props = {
   tom?: "normal" | "alerta" | "bom";
 };
 
-const TONS = {
+const RAIL = {
+  normal: "border-l-grafite",
+  alerta: "border-l-marca",
+  bom: "border-l-verde",
+} as const;
+
+const NUMERO = {
   normal: "text-tinta",
-  alerta: "text-vermelho",
+  alerta: "text-marca",
   bom: "text-verde",
 } as const;
 
@@ -19,10 +25,10 @@ export function CartaoNumero({
   tom = "normal",
 }: Props) {
   return (
-    <div className="carta p-4">
+    <div className={`carta-destacada p-4 ${RAIL[tom]}`}>
       <p className="text-base font-bold text-tinta-suave">{titulo}</p>
       <p
-        className={`numeros mt-1 text-[28px] leading-tight font-black ${TONS[tom]}`}
+        className={`numeros mt-1 text-[30px] leading-tight font-black ${NUMERO[tom]}`}
       >
         {valor}
       </p>

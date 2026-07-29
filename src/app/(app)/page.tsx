@@ -44,7 +44,7 @@ export default async function PaginaPainel() {
   return (
     <div className="space-y-6">
       <section aria-labelledby="titulo-numeros">
-        <h1 id="titulo-numeros" className="text-2xl font-black">
+        <h1 id="titulo-numeros" className="text-2xl font-black text-marca">
           Painel
         </h1>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -88,7 +88,7 @@ export default async function PaginaPainel() {
       </section>
 
       <section className="carta p-4" aria-labelledby="titulo-hoje">
-        <h2 id="titulo-hoje" className="text-2xl font-black">
+        <h2 id="titulo-hoje" className="text-2xl font-black text-marca">
           Para fazer hoje
         </h2>
         {pendencias.length === 0 ? (
@@ -144,11 +144,11 @@ export default async function PaginaPainel() {
       </section>
 
       <section className="carta p-4" aria-labelledby="titulo-meses">
-        <h2 id="titulo-meses" className="text-2xl font-black">
+        <h2 id="titulo-meses" className="text-2xl font-black text-marca">
           Valor vendido por mês
         </h2>
         <p className="text-tinta-suave">
-          Últimos 18 meses. A linha vermelha é a meta de {reais(metaMensal)}.
+          Últimos 18 meses. A linha tracejada é a meta de {reais(metaMensal)}.
         </p>
         <div className="mt-3">
           <GraficoMeses dados={porMes} meta={metaMensal} />
@@ -156,7 +156,7 @@ export default async function PaginaPainel() {
       </section>
 
       <section className="carta p-4" aria-labelledby="titulo-segmentos">
-        <h2 id="titulo-segmentos" className="text-2xl font-black">
+        <h2 id="titulo-segmentos" className="text-2xl font-black text-marca">
           Vendas por segmento em {anoCorrente}
         </h2>
         <div className="mt-3">
@@ -185,7 +185,7 @@ export default async function PaginaPainel() {
       </section>
 
       <section className="carta p-4" aria-labelledby="titulo-alvos">
-        <h2 id="titulo-alvos" className="text-2xl font-black">
+        <h2 id="titulo-alvos" className="text-2xl font-black text-marca">
           Meus alvos da semana
         </h2>
         <p className="text-tinta-suave">
@@ -201,7 +201,7 @@ export default async function PaginaPainel() {
               key={alvo.rotulo}
               className="rounded-xl border-2 border-borda bg-fundo p-3 text-center"
             >
-              <p className="numeros text-[28px] leading-none font-black">
+              <p className="numeros text-[28px] leading-none font-black text-marca">
                 {alvo.valor}
               </p>
               <p className="mt-1 font-bold text-tinta-suave">{alvo.rotulo}</p>

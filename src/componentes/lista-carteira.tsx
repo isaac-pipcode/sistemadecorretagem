@@ -51,7 +51,7 @@ export function ListaCarteira({ itens }: Props) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-black">Carteira</h1>
+      <h1 className="text-2xl font-black text-marca">Carteira</h1>
 
       <div className="carta bg-marca-clara p-4">
         <p className="font-bold">
@@ -86,7 +86,7 @@ export function ListaCarteira({ itens }: Props) {
               className={`carta p-4 ${frio ? "border-vermelho" : ""}`}
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="text-xl font-black">{item.nome}</p>
+                <p className="text-xl font-black text-marca">{item.nome}</p>
                 <p className="numeros text-lg font-black">
                   {reais(item.valorTotal)}
                 </p>

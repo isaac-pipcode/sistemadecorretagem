@@ -17,9 +17,9 @@ export function Abas() {
   return (
     <nav
       aria-label="Seções do sistema"
-      className="mx-auto w-full max-w-6xl overflow-x-auto px-3 sm:px-5"
+      className="mx-auto w-full max-w-6xl overflow-x-auto px-4 sm:px-6"
     >
-      <ul className="flex min-w-max gap-1 pb-1">
+      <ul className="carta flex min-w-max gap-1 p-1.5">
         {ABAS.map((aba) => {
           const ativa =
             aba.href === "/" ? caminho === "/" : caminho.startsWith(aba.href);
@@ -28,10 +28,10 @@ export function Abas() {
               <Link
                 href={aba.href}
                 aria-current={ativa ? "page" : undefined}
-                className={`flex min-h-12 items-center rounded-t-xl border-b-4 px-4 font-bold whitespace-nowrap ${
+                className={`flex min-h-12 items-center rounded-xl px-4 font-bold whitespace-nowrap ${
                   ativa
-                    ? "border-marca bg-marca-clara text-marca"
-                    : "border-transparent text-tinta-suave"
+                    ? "bg-marca text-white shadow-sm"
+                    : "text-tinta-suave hover:bg-marca-clara"
                 }`}
               >
                 {aba.rotulo}

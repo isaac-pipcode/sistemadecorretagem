@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Abas } from "@/componentes/abas";
+import { Marca } from "@/componentes/marca";
 import { MedidorMeta } from "@/componentes/medidor-meta";
 import { sair } from "@/lib/acoes";
 import { carregarMetas, hojeIso, listarVendas, resumoDoMes } from "@/lib/dados";
@@ -21,31 +22,26 @@ export default async function LayoutApp({
 
   return (
     <div className="min-h-dvh">
-      <header className="sticky top-0 z-30 border-b-2 border-borda bg-carta">
-        <div className="mx-auto w-full max-w-6xl px-3 pt-3 pb-2 sm:px-5">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <Link
-                href="/"
-                className="block text-lg font-black leading-tight text-marca sm:text-2xl"
-              >
-                Minhas Vendas — Consórcios
-              </Link>
-              <p className="text-tinta-suave">
-                {nomeMes(Number(numeroMes))} de {ano}
-              </p>
-            </div>
+      {/* Faixa azul: marca, mês corrente e o medidor da meta */}
+      <div className="faixa-marca">
+        <div className="mx-auto w-full max-w-6xl px-4 pt-3 pb-5 sm:px-6 sm:pt-4 sm:pb-6">
+          {/* No celular a marca fica sozinha na primeira linha; os botões
+              caem para baixo, senão o cabeçalho estoura os 380px. */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Link href="/" aria-label="Ir para o Painel">
+              <Marca />
+            </Link>
             <div className="flex shrink-0 gap-2">
               <Link
                 href="/conta"
-                className="botao-base botao-neutro !min-h-11 !px-3"
+                className="botao-base !min-h-11 !rounded-full border-2 border-white/35 !px-4 text-white"
               >
                 Minha conta
               </Link>
               <form action={sair}>
                 <button
                   type="submit"
-                  className="botao-base botao-neutro !min-h-11 !px-3"
+                  className="botao-base !min-h-11 !rounded-full border-2 border-white/35 !px-4 text-white"
                 >
                   Sair
                 </button>
@@ -53,13 +49,25 @@ export default async function LayoutApp({
             </div>
           </div>
 
-          <MedidorMeta valor={mes.valor} meta={metaMensal} cotas={mes.cotas} />
+          <p className="mt-3 font-bold text-white/80 first-letter:uppercase">
+            {nomeMes(Number(numeroMes))} de {ano}
+          </p>
+          <div className="mt-1.5">
+            <MedidorMeta
+              valor={mes.valor}
+              meta={metaMensal}
+              cotas={mes.cotas}
+            />
+          </div>
         </div>
+      </div>
 
+      {/* Abas: descem sobre a faixa azul, como um bloco de pastilhas */}
+      <div className="sticky top-0 z-30 -mt-3 bg-fundo/95 pb-1 backdrop-blur">
         <Abas />
-      </header>
+      </div>
 
-      <main className="mx-auto w-full max-w-6xl px-3 pt-4 pb-16 sm:px-5">
+      <main className="mx-auto w-full max-w-6xl px-4 pt-4 pb-20 sm:px-6">
         {children}
       </main>
     </div>

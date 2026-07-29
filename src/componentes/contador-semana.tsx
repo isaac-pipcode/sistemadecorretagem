@@ -40,7 +40,7 @@ export function ContadorSemana({
         ocupado ? "opacity-70" : ""
       }`}
     >
-      <p className="text-lg font-bold">{rotulo}</p>
+      <p className="text-lg font-bold text-tinta-suave">{rotulo}</p>
       <p
         className={`numeros text-[34px] leading-tight font-black sm:text-[40px] ${
           bateu ? "text-verde" : ""

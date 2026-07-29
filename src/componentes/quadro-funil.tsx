@@ -70,7 +70,7 @@ export function QuadroFunil({ leads, hoje, conversao }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black">Funil de vendas</h1>
+        <h1 className="text-2xl font-black text-marca">Funil de vendas</h1>
         <button
           type="button"
           onClick={() => setCriando(true)}
@@ -84,7 +84,7 @@ export function QuadroFunil({ leads, hoje, conversao }: Props) {
         <p className="text-base font-bold text-tinta-suave">
           De cada proposta que fiz nos últimos 90 dias, quantas viraram venda
         </p>
-        <p className="numeros text-[28px] leading-tight font-black">
+        <p className="numeros text-[28px] leading-tight font-black text-marca">
           {(conversao.taxa * 100).toLocaleString("pt-BR", {
             maximumFractionDigits: 0,
           })}
@@ -120,7 +120,9 @@ export function QuadroFunil({ leads, hoje, conversao }: Props) {
               aria-label={coluna.titulo}
             >
               <div className="flex items-baseline justify-between gap-2 border-b-2 border-borda pb-2">
-                <h2 className="text-lg font-black">{coluna.titulo}</h2>
+                <h2 className="text-lg font-black text-marca">
+                  {coluna.titulo}
+                </h2>
                 <span className="numeros rounded-full bg-marca px-3 py-1 font-black text-white">
                   {daColuna.length}
                 </span>

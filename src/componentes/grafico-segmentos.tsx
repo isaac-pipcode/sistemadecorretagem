@@ -19,10 +19,10 @@ type Props = {
 };
 
 const CORES: Record<Segmento, string> = {
-  Imóveis: "#123a6b",
-  Motos: "#10643a",
-  Serviços: "#8a5200",
-  Agro: "#6b3fa0",
+  Imóveis: "#c4161c",
+  Motos: "#344054",
+  Serviços: "#b54708",
+  Agro: "#067647",
 };
 
 type PropsRotulo = {
@@ -42,7 +42,7 @@ function RotuloDireita(props: unknown) {
       dominantBaseline="middle"
       fontSize={15}
       fontWeight={700}
-      fill="#14161a"
+      fill="#1a1414"
     >
       {reaisCompacto(Number(value ?? 0))}
     </text>
@@ -60,15 +60,15 @@ export function GraficoSegmentos({ dados }: Props) {
         layout="vertical"
         margin={{ top: 4, right: 78, left: 0, bottom: 4 }}
       >
-        <CartesianGrid stroke="#d6d2ca" horizontal={false} />
+        <CartesianGrid stroke="#e6dede" horizontal={false} />
         <XAxis type="number" domain={[0, maior * 1.15]} hide />
         <YAxis
           type="category"
           dataKey="segmento"
           width={92}
-          tick={{ fontSize: 17, fill: "#14161a", fontWeight: 700 }}
+          tick={{ fontSize: 17, fill: "#1a1414", fontWeight: 700 }}
           tickLine={false}
-          axisLine={{ stroke: "#d6d2ca" }}
+          axisLine={{ stroke: "#e6dede" }}
         />
         <Bar
           dataKey="valor"

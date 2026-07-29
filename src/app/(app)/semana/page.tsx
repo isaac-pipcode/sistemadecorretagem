@@ -45,7 +45,7 @@ export default async function PaginaSemana() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-black">Minha semana</h1>
+        <h1 className="text-2xl font-black text-marca">Minha semana</h1>
         <p className="numeros text-lg font-bold text-tinta-suave">
           Semana de {faixaDaSemana(segunda)} (começa na segunda-feira)
         </p>
@@ -83,7 +83,7 @@ export default async function PaginaSemana() {
 
       <div className="carta bg-marca-clara p-4">
         <p className="text-lg font-bold">Vendas desta semana</p>
-        <p className="numeros text-[34px] leading-tight font-black">
+        <p className="numeros text-[34px] leading-tight font-black text-marca">
           {reais(vendasSemana.valor)}
         </p>
         <p className="numeros font-bold text-tinta-suave">
@@ -94,7 +94,9 @@ export default async function PaginaSemana() {
       </div>
 
       <section className="carta p-4">
-        <h2 className="text-xl font-black">Corrigir os números na mão</h2>
+        <h2 className="text-xl font-black text-marca">
+          Corrigir os números na mão
+        </h2>
         <p className="text-tinta-suave">
           Use quando esquecer de apertar o +1 durante o dia.
         </p>
@@ -109,7 +111,7 @@ export default async function PaginaSemana() {
       </section>
 
       <section className="carta p-4">
-        <h2 className="text-xl font-black">Últimas 12 semanas</h2>
+        <h2 className="text-xl font-black text-marca">Últimas 12 semanas</h2>
         <p className="text-tinta-suave">
           Alvos por semana: {metasSemanais.contatos} contatos,{" "}
           {metasSemanais.reunioes} reuniões e {metasSemanais.propostas}{" "}

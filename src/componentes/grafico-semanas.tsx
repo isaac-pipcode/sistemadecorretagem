@@ -29,17 +29,17 @@ export function GraficoSemanas({ dados }: Props) {
               data={dados}
               margin={{ top: 24, right: 8, left: 0, bottom: 4 }}
             >
-              <CartesianGrid stroke="#d6d2ca" vertical={false} />
+              <CartesianGrid stroke="#e6dede" vertical={false} />
               <XAxis
                 dataKey="semana"
-                tick={{ fontSize: 15, fill: "#14161a", fontWeight: 700 }}
+                tick={{ fontSize: 15, fill: "#1a1414", fontWeight: 700 }}
                 tickLine={false}
-                axisLine={{ stroke: "#d6d2ca" }}
+                axisLine={{ stroke: "#e6dede" }}
                 interval={0}
               />
               <YAxis
                 allowDecimals={false}
-                tick={{ fontSize: 15, fill: "#4a4f57" }}
+                tick={{ fontSize: 15, fill: "#5a4d4d" }}
                 tickLine={false}
                 axisLine={false}
                 width={36}
@@ -49,7 +49,7 @@ export function GraficoSemanas({ dados }: Props) {
                 height={32}
                 formatter={(valor) => (
                   <span
-                    style={{ fontSize: 17, fontWeight: 700, color: "#14161a" }}
+                    style={{ fontSize: 17, fontWeight: 700, color: "#1a1414" }}
                   >
                     {valor}
                   </span>
@@ -58,7 +58,7 @@ export function GraficoSemanas({ dados }: Props) {
               <Bar
                 dataKey="contatos"
                 name="Contatos"
-                fill="#123a6b"
+                fill="#c4161c"
                 radius={[6, 6, 0, 0]}
                 isAnimationActive={false}
               >
@@ -66,13 +66,13 @@ export function GraficoSemanas({ dados }: Props) {
                   dataKey="contatos"
                   position="top"
                   formatter={(v) => (Number(v) > 0 ? String(v) : "")}
-                  style={{ fontSize: 15, fontWeight: 700, fill: "#14161a" }}
+                  style={{ fontSize: 15, fontWeight: 700, fill: "#1a1414" }}
                 />
               </Bar>
               <Bar
                 dataKey="propostas"
                 name="Propostas"
-                fill="#10643a"
+                fill="#344054"
                 radius={[6, 6, 0, 0]}
                 isAnimationActive={false}
               >
@@ -80,7 +80,7 @@ export function GraficoSemanas({ dados }: Props) {
                   dataKey="propostas"
                   position="top"
                   formatter={(v) => (Number(v) > 0 ? String(v) : "")}
-                  style={{ fontSize: 15, fontWeight: 700, fill: "#14161a" }}
+                  style={{ fontSize: 15, fontWeight: 700, fill: "#1a1414" }}
                 />
               </Bar>
             </BarChart>
