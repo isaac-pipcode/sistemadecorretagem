@@ -1,6 +1,9 @@
--- Cria a conta de acesso da consultora (sistema de uma usuária só).
+-- Cria a conta da primeira consultora — a dona das 52 vendas do 002_seed.
 -- Rode no SQL Editor do Supabase, com a senha inicial que você quiser.
--- A troca de senha depois é feita pela própria tela "Minha conta" do sistema.
+--
+-- `senha_provisoria` deixa a conta presa em /trocar-senha até ela escolher uma
+-- senha só dela, no primeiro acesso. As consultoras seguintes não passam por
+-- aqui: quem cadastra é a função `convidar-consultora` (veja o 005).
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -12,14 +15,14 @@ select
   gen_random_uuid(),
   'authenticated',
   'authenticated',
-  'consultora@minhasvendas.com.br',
+  'rosepipano@gmail.com',
   extensions.crypt('Vendas2026!', extensions.gen_salt('bf')),
   now(), now(), now(),
   '{"provider":"email","providers":["email"]}'::jsonb,
-  '{"nome":"Consultora Ademicon"}'::jsonb,
+  '{"nome":"Rose Pipano","senha_provisoria":true}'::jsonb,
   false, false
 where not exists (
-  select 1 from auth.users where email = 'consultora@minhasvendas.com.br'
+  select 1 from auth.users where email = 'rosepipano@gmail.com'
 );
 
 insert into auth.identities (
@@ -30,7 +33,7 @@ select
   jsonb_build_object('sub', u.id::text, 'email', u.email, 'email_verified', true, 'phone_verified', false),
   'email', now(), now(), now()
 from auth.users u
-where u.email = 'consultora@minhasvendas.com.br'
+where u.email = 'rosepipano@gmail.com'
   and not exists (
     select 1 from auth.identities i where i.user_id = u.id and i.provider = 'email'
   );

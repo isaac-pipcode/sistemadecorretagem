@@ -97,8 +97,8 @@ begin
     execute format('drop policy if exists %I on %I', 'acesso_consultora_' || t, t);
     execute format(
       'create policy %I on %I for all to authenticated
-         using (auth.jwt() ->> ''email'' = ''consultora@minhasvendas.com.br'')
-         with check (auth.jwt() ->> ''email'' = ''consultora@minhasvendas.com.br'')',
+         using (auth.jwt() ->> ''email'' = ''rosepipano@gmail.com'')
+         with check (auth.jwt() ->> ''email'' = ''rosepipano@gmail.com'')',
       'acesso_consultora_' || t, t
     );
   end loop;

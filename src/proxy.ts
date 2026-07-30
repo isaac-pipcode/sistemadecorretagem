@@ -2,10 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const ROTAS_PUBLICAS = ["/entrar"];
+const TROCA_OBRIGATORIA = "/trocar-senha";
 
 /**
  * Renova a sessão do Supabase a cada requisição e protege todas as telas:
  * sem login, a usuária vai sempre para /entrar.
+ *
+ * Também segura quem ainda está com a senha provisória do e-mail de boas-vindas
+ * em /trocar-senha, até ela escolher uma senha só dela.
  */
 export async function proxy(request: NextRequest) {
   let resposta = NextResponse.next({ request });
@@ -46,6 +50,23 @@ export async function proxy(request: NextRequest) {
   }
 
   if (user && caminho === "/entrar") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
+  // Senha provisória: nenhuma outra tela abre antes da troca.
+  const provisoria = user?.user_metadata?.senha_provisoria === true;
+
+  if (user && provisoria && caminho !== TROCA_OBRIGATORIA) {
+    const url = request.nextUrl.clone();
+    url.pathname = TROCA_OBRIGATORIA;
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && !provisoria && caminho === TROCA_OBRIGATORIA) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     url.search = "";

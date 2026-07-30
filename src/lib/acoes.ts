@@ -118,10 +118,11 @@ export async function salvarPerfil(
   return OK("Nome salvo!");
 }
 
-export async function trocarSenha(
-  _anterior: Resultado | null,
-  formData: FormData,
-): Promise<Resultado> {
+/**
+ * Troca a senha e derruba a marca de senha provisória — é ela que o proxy lê
+ * para prender a usuária em /trocar-senha no primeiro acesso.
+ */
+async function aplicarSenha(formData: FormData): Promise<Resultado> {
   const nova = texto(formData, "senha");
   const confirmacao = texto(formData, "confirmacao");
   if (nova.length < 8)
@@ -129,9 +130,37 @@ export async function trocarSenha(
   if (nova !== confirmacao) return ERRO("As duas senhas não são iguais.");
 
   const { supabase } = await exigirUsuaria();
-  const { error } = await supabase.auth.updateUser({ password: nova });
-  if (error) return ERRO("Não deu para trocar a senha. Tente de novo.");
+  const { error } = await supabase.auth.updateUser({
+    password: nova,
+    data: { senha_provisoria: false },
+  });
+  if (error) {
+    return ERRO(
+      error.message.includes("different from the old")
+        ? "Escolha uma senha diferente da que veio no e-mail."
+        : "Não deu para trocar a senha. Tente de novo.",
+    );
+  }
   return OK("Senha trocada!");
+}
+
+export async function trocarSenha(
+  _anterior: Resultado | null,
+  formData: FormData,
+): Promise<Resultado> {
+  return aplicarSenha(formData);
+}
+
+/** Primeiro acesso: troca a senha e já leva para o Painel. */
+export async function definirPrimeiraSenha(
+  _anterior: Resultado | null,
+  formData: FormData,
+): Promise<Resultado> {
+  const resultado = await aplicarSenha(formData);
+  if (!resultado.ok) return resultado;
+
+  atualizarTelas();
+  redirect("/");
 }
 
 // ---------------------------------------------------------------- vendas

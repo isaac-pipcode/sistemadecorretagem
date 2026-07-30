@@ -1,57 +1,51 @@
 -- Cadastrar uma consultora nova.
 --
--- Troque as três linhas marcadas com <<< e rode no SQL Editor do Supabase.
--- O perfil em `consultoras` nasce sozinho (gatilho do 004), e a partir daí
--- ela entra no site com esse e-mail e essa senha e começa com a tela em
--- branco: nenhuma venda, nenhum interessado, nenhum cliente das outras.
+-- NÃO se cadastra mais por SQL. Quem cria a conta é a função
+-- `convidar-consultora`, e o motivo é simples: ela sorteia a senha provisória,
+-- manda o e-mail de boas-vindas e marca a conta para exigir a troca no
+-- primeiro acesso. Inserindo direto aqui, a consultora ficaria sem e-mail,
+-- sem saber a senha e sem a troca obrigatória.
 --
--- Peça para ela trocar a senha no primeiro acesso, em Minha conta.
+-- Para cadastrar, rode no seu computador (a chave de serviço está em
+-- Supabase → Project Settings → API → service_role):
+--
+--   curl -X POST \
+--     "https://hwwovuawwrfptixzlmhi.supabase.co/functions/v1/convidar-consultora" \
+--     -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+--     -H "Content-Type: application/json" \
+--     -d '{"nome":"Nome Sobrenome","email":"nome@exemplo.com","cidade":"São Paulo"}'
+--
+-- Resposta com `"enviado": true` quer dizer que o e-mail saiu. Se vier
+-- `"enviado": false`, a conta foi criada do mesmo jeito e a senha vem no
+-- campo `senha` — repasse à mão e confira os segredos GMAIL_REMETENTE e
+-- GMAIL_SENHA_APP em Supabase → Edge Functions → Secrets.
+--
+-- O código da função está em supabase/functions/convidar-consultora/index.ts.
 
-do $$
-declare
-  novo_email  text := 'nome.sobrenome@exemplo.com.br';   -- <<< e-mail
-  senha       text := 'TroqueEstaSenha1!';               -- <<< senha inicial
-  nome_dela   text := 'Nome Sobrenome';                  -- <<< nome
-  nova_id     uuid := gen_random_uuid();
-begin
-  if exists (select 1 from auth.users where email = novo_email) then
-    raise notice 'Já existe conta com o e-mail %. Nada foi feito.', novo_email;
-    return;
-  end if;
 
-  insert into auth.users (
-    instance_id, id, aud, role, email, encrypted_password,
-    email_confirmed_at, created_at, updated_at,
-    raw_app_meta_data, raw_user_meta_data, is_sso_user, is_anonymous
-  ) values (
-    '00000000-0000-0000-0000-000000000000',
-    nova_id, 'authenticated', 'authenticated', novo_email,
-    extensions.crypt(senha, extensions.gen_salt('bf')),
-    now(), now(), now(),
-    '{"provider":"email","providers":["email"]}'::jsonb,
-    jsonb_build_object('nome', nome_dela),
-    false, false
-  );
-
-  insert into auth.identities (
-    provider_id, user_id, identity_data, provider,
-    last_sign_in_at, created_at, updated_at
-  ) values (
-    nova_id::text, nova_id,
-    jsonb_build_object(
-      'sub', nova_id::text, 'email', novo_email,
-      'email_verified', true, 'phone_verified', false
-    ),
-    'email', now(), now(), now()
-  );
-
-  raise notice 'Conta criada para % (%).', nome_dela, novo_email;
-end $$;
-
--- Confira:
-select c.nome, c.cidade, u.email
-  from consultoras c join auth.users u on u.id = c.id
+-- Quem já está cadastrada, e quem ainda não entrou nenhuma vez:
+select c.nome,
+       c.cidade,
+       u.email,
+       (u.raw_user_meta_data ->> 'senha_provisoria')::boolean as senha_provisoria,
+       u.last_sign_in_at as ultimo_acesso,
+       (select count(*) from vendas v where v.consultora_id = c.id) as vendas
+  from consultoras c
+  join auth.users u on u.id = c.id
  order by c.criado_em;
 
--- Para apagar uma consultora e tudo o que é dela (sem volta):
---   delete from auth.users where email = 'nome.sobrenome@exemplo.com.br';
+
+-- Reenviar o convite para quem perdeu o e-mail: apague e cadastre de novo
+-- SÓ se ela ainda não tiver lançado nada (a linha de cima mostra `vendas`).
+-- Isto apaga a consultora e tudo o que é dela, sem volta:
+--
+--   delete from auth.users where email = 'nome@exemplo.com';
+--
+-- Se ela já tem vendas lançadas, não apague — defina uma senha nova e marque
+-- para trocar no primeiro acesso:
+--
+--   update auth.users
+--      set encrypted_password = extensions.crypt('SenhaNova1', extensions.gen_salt('bf')),
+--          raw_user_meta_data = raw_user_meta_data || '{"senha_provisoria": true}'::jsonb,
+--          updated_at = now()
+--    where email = 'nome@exemplo.com';

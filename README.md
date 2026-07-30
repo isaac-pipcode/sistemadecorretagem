@@ -11,18 +11,18 @@ Tudo em português, pensado para celular, com letra grande e botões grandes.
 
 ## Como entrar no sistema
 
-| | |
-|---|---|
-| **Endereço** | <https://minhas-vendas-consorcios.vercel.app> |
-| **E-mail** | `consultora@minhasvendas.com.br` |
-| **Senha inicial** | `Vendas2026!` |
+O endereço é <https://minhas-vendas-consorcios.vercel.app>. O e-mail e a senha
+chegam pelo **e-mail de boas-vindas**, mandado no dia em que a conta é criada.
 
-> **Troque a senha no primeiro acesso.** Depois de entrar, toque em
-> **Minha conta** (canto superior direito) → **Trocar a senha** → escreva a
-> senha nova duas vezes → **Trocar senha**. A senha precisa ter 8 letras ou
-> números, no mínimo. Anote-a em lugar seguro: não existe tela pública de
-> "esqueci minha senha" (é possível redefinir pelo painel do Supabase, em
-> *Authentication → Users*).
+**No primeiro acesso o sistema pede uma senha nova** e não abre nenhuma tela
+antes disso — a senha que veio no e-mail é temporária. Escreva a senha nova
+duas vezes e pronto, cai direto no Painel. Depois disso, para trocar de novo:
+**Minha conta** (canto superior direito) → **Trocar a senha**.
+
+A senha precisa ter 8 letras ou números, no mínimo. Anote-a em lugar seguro:
+não existe tela pública de "esqueci minha senha" (dá para redefinir pelo painel
+do Supabase, em *Authentication → Users*, ou pelo SQL no fim do
+`db/005_nova_consultora.sql`).
 
 Não existe tela de cadastro público: as contas são criadas por quem administra
 o sistema (veja *Uma consultora por conta*, abaixo).
@@ -41,10 +41,26 @@ devolve as linhas em que ela bate (*Row Level Security*). Uma tela nova não tem
 como esquecer o filtro — mesmo se o código pedisse "todas as vendas", o banco
 devolveria só as da consultora da vez.
 
-**Cadastrar uma consultora nova:** abra `db/005_nova_consultora.sql`, troque as
-três linhas marcadas com `<<<` (e-mail, senha inicial e nome) e rode no SQL
-Editor do Supabase. Ela entra com uma tela em branco e troca a senha em
-*Minha conta*.
+**Cadastrar uma consultora nova:** uma chamada só, que cria a conta, sorteia a
+senha e manda o e-mail de boas-vindas. A chave de serviço está em Supabase →
+*Project Settings → API → service_role*:
+
+```bash
+curl -X POST \
+  "https://hwwovuawwrfptixzlmhi.supabase.co/functions/v1/convidar-consultora" \
+  -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"Nome Sobrenome","email":"nome@exemplo.com","cidade":"São Paulo"}'
+```
+
+Volta `{"ok": true, "enviado": true}` quando o e-mail sai. Se vier
+`"enviado": false`, a conta foi criada do mesmo jeito e a senha vem no campo
+`senha` — repasse à mão e veja *O e-mail de boas-vindas*, abaixo. Ela entra com
+a tela em branco: nenhuma venda, nenhum interessado, nenhum cliente das outras.
+
+Não crie conta por SQL. A senha provisória só existe dentro da função — no
+banco fica só o hash dela —, então uma conta criada à mão nasce sem e-mail, sem
+senha conhecida e sem a troca obrigatória.
 
 **Apagar uma consultora:** `delete from auth.users where email = '...'` remove
 a conta e, junto, tudo o que era dela.
@@ -53,6 +69,36 @@ a conta e, junto, tudo o que era dela.
 > **Allow new users to sign up** desligado. Sem isso qualquer pessoa consegue
 > criar uma conta sozinha — não veria dado de ninguém, mas entraria no sistema.
 > Com o cadastro desligado, só entra quem você cadastrar.
+
+---
+
+## O e-mail de boas-vindas
+
+Toda consultora cadastrada recebe, na hora, um e-mail com o endereço do site, o
+e-mail de acesso e a senha temporária, avisando que o sistema vai pedir uma
+senha nova logo na entrada. Quem monta e manda esse e-mail é a função
+`supabase/functions/convidar-consultora/index.ts` — o texto do e-mail está lá
+dentro, em `corpoDoEmail`, e é lá que se muda a redação.
+
+O envio sai pelo Gmail de vocês, com uma **senha de app** do Google (não é a
+senha normal da conta — é um código de 16 letras que serve só para isso, e que
+pode ser revogado sem mexer na senha de verdade). Para ligar:
+
+1. Na Conta do Google que vai enviar, ative a verificação em duas etapas.
+2. Vá em <https://myaccount.google.com/apppasswords>, crie uma senha de app com
+   o nome `Minhas Vendas` e copie as 16 letras.
+3. No Supabase, em *Edge Functions → Secrets*, cadastre:
+
+| Segredo | Valor |
+|---|---|
+| `GMAIL_REMETENTE` | o Gmail que envia, ex.: `corretora@gmail.com` |
+| `GMAIL_SENHA_APP` | as 16 letras da senha de app |
+| `ENDERECO_SISTEMA` | `https://minhas-vendas-consorcios.vercel.app` |
+
+Enquanto esses segredos não existirem, o cadastro continua funcionando: a conta
+é criada, a resposta volta com `"enviado": false` e traz a senha no campo
+`senha`, para repassar por WhatsApp. Ninguém fica sem conta por causa do
+e-mail.
 
 ---
 
@@ -158,8 +204,11 @@ Se preferir cadastrá-las em *Project → Settings → Environment Variables*
 o arquivo.
 
 > A chave de serviço (*service_role*) do Supabase **nunca** pode ir para o
-> repositório nem para o navegador: ela ignora o RLS. O sistema não usa essa
-> chave em lugar nenhum.
+> repositório nem para o navegador: ela ignora o RLS. O site não usa essa chave
+> em lugar nenhum. Quem usa é a função `convidar-consultora`, que roda dentro
+> do Supabase e recebe a chave pronta do próprio ambiente — e é a mesma chave
+> que autoriza quem chama a função, por isso ela só sai do painel do Supabase
+> na hora de cadastrar alguém.
 
 ---
 
@@ -176,7 +225,10 @@ como sendo da primeira consultora tudo o que já estiver no banco):
 4. `db/004_multi_consultora.sql` — separa os dados por consultora. Pode ser
    rodado de novo quando quiser, sem estragar nada.
 
-Depois, `db/005_nova_consultora.sql` cadastra cada consultora nova.
+Consultora nova não entra por SQL: quem cadastra é a função
+`convidar-consultora` (veja *Uma consultora por conta*). O
+`db/005_nova_consultora.sql` serve para conferir quem já está cadastrada e para
+redefinir senha quando alguém perde o e-mail.
 
 Os dados originais das vendas também estão em `db/vendas-caderno.json`.
 
