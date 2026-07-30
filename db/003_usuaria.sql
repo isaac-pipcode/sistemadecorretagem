@@ -4,11 +4,20 @@
 -- `senha_provisoria` deixa a conta presa em /trocar-senha até ela escolher uma
 -- senha só dela, no primeiro acesso. As consultoras seguintes não passam por
 -- aqui: quem cadastra é a função `convidar-consultora` (veja o 005).
+--
+-- As oito colunas de token vão como string vazia, e isso NÃO é enfeite: o
+-- serviço de login (GoTrue) lê essas colunas como texto e estoura com erro 500
+-- se achar NULL — que é o default de quem insere direto na tabela. O erro sobe
+-- para a tela como "senha incorreta", com a senha certa. Se um dia o login
+-- recusar sem motivo, confira isto antes de suspeitar da senha.
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
   email_confirmed_at, created_at, updated_at,
-  raw_app_meta_data, raw_user_meta_data, is_sso_user, is_anonymous
+  raw_app_meta_data, raw_user_meta_data, is_sso_user, is_anonymous,
+  confirmation_token, recovery_token, email_change,
+  email_change_token_new, email_change_token_current,
+  phone_change, phone_change_token, reauthentication_token
 )
 select
   '00000000-0000-0000-0000-000000000000',
@@ -20,7 +29,8 @@ select
   now(), now(), now(),
   '{"provider":"email","providers":["email"]}'::jsonb,
   '{"nome":"Rose Pipano","senha_provisoria":true}'::jsonb,
-  false, false
+  false, false,
+  '', '', '', '', '', '', '', ''
 where not exists (
   select 1 from auth.users where email = 'rosepipano@gmail.com'
 );

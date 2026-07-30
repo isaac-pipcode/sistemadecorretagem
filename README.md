@@ -27,6 +27,12 @@ do Supabase, em *Authentication → Users*, ou pelo SQL no fim do
 Não existe tela de cadastro público: as contas são criadas por quem administra
 o sistema (veja *Uma consultora por conta*, abaixo).
 
+> **Se aparecer "senha incorreta" com a senha certa**, não é a senha: é uma
+> conta criada por `INSERT` à mão, com as colunas de token em `NULL`, que faz o
+> serviço de login devolver erro 500. O conserto está no fim do
+> `db/005_nova_consultora.sql`. Quem nasce pela função `convidar-consultora`
+> não passa por isso.
+
 ---
 
 ## Uma consultora por conta
