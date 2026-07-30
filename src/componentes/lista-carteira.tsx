@@ -86,7 +86,11 @@ export function ListaCarteira({ itens }: Props) {
               className={`carta p-4 ${frio ? "border-vermelho" : ""}`}
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="text-xl font-black text-marca">{item.nome}</p>
+                {/* min-w-0: sem isto o item de flex se recusa a encolher e
+                    um nome comprido estica o cartão para fora da tela. */}
+                <p className="min-w-0 text-xl font-black text-marca">
+                  {item.nome}
+                </p>
                 <p className="numeros text-lg font-black">
                   {reais(item.valorTotal)}
                 </p>

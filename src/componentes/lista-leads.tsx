@@ -183,7 +183,9 @@ export function ListaLeads({ itens }: { itens: ItemLead[] }) {
             {pessoas.map((item) => (
               <li key={item.id} className="carta p-4">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                  <p className="text-xl font-black text-marca">{item.nome}</p>
+                  <p className="min-w-0 text-xl font-black text-marca">
+                    {item.nome}
+                  </p>
                   {item.valorTotal > 0 ? (
                     <p className="numeros text-lg font-black">
                       {reais(item.valorTotal)}

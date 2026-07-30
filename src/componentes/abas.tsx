@@ -15,6 +15,7 @@ const ABAS = [
   { href: "/leads", rotulo: "Leads", curto: "Leads" },
   { href: "/vendas", rotulo: "Vendas", curto: "Vendas" },
   { href: "/carteira", rotulo: "Carteira", curto: "Carteira" },
+  { href: "/analises", rotulo: "Análises", curto: "Análises" },
   { href: "/semana", rotulo: "Minha semana", curto: "Semana" },
 ] as const;
 

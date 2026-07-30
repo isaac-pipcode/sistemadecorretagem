@@ -71,6 +71,12 @@ body {
     sans-serif;
   font-size: 1rem;
   line-height: 1.5;
+  /*
+    Nome sem espaços, e-mail ou link colado numa nota não tem onde quebrar:
+    sem isto, uma palavra dessas estica o cartão, empurra a página inteira e
+    o conteúdo aparece cortado na direita. Só quebra o que não caberia.
+  */
+  overflow-wrap: break-word;
 }
 
 button,

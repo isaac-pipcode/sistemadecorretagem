@@ -108,7 +108,7 @@ e-mail.
 
 ---
 
-## As seis abas
+## As sete abas
 
 | Aba | Para que serve |
 |---|---|
@@ -117,6 +117,7 @@ e-mail.
 | **Leads** | Todo mundo que já passou pelas suas mãos, de A a Z, com um índice de letras para pular direto. Filtros de **situação** (convertido, no funil, perdido, sem movimento) e de **temperatura**. Botões de WhatsApp e **Registrar conversa**. |
 | **Vendas** | Todas as vendas, com filtros de ano, segmento e situação, busca por nome, total do período e o botão **+ Registrar venda**. Dá para corrigir e apagar qualquer registro. |
 | **Carteira** | Só quem tem cota **Ativa** ou **Contemplada** — quem desistiu fica em *Leads*. Um cartão por cliente, do contato mais antigo para o mais novo (fila de reativação). Quem está há mais de 90 dias sem contato fica marcado em vermelho. Botões de WhatsApp, **Registrar conversa** e edição da próxima ação. |
+| **Análises** | Painéis interativos: filtros de ano, segmento e o que entra na conta mudam todos os quadros de uma vez. Distribuição por segmento, por origem e por faixa de tíquete; os meses do ano com o melhor destacado; ranking dos dez maiores clientes e de quem mais indica; e a projeção de fechamento do ano pelo ritmo atual. |
 | **Minha semana** | Contadores de contatos, reuniões e propostas com botões **+1**, comparação com os alvos da semana (27 / 11 / 7) e gráfico das últimas 12 semanas. |
 
 O medidor da meta do mês fica no topo, em todas as abas.
@@ -138,6 +139,14 @@ mais recente entre a última conversa anotada e a última venda:
 
 Registrar uma conversa esquenta a pessoa de novo — por isso o botão aparece
 nas duas abas.
+
+### A projeção da aba Análises
+
+É uma regra de três, não um modelo: pega o que já foi vendido no ano, divide
+pelos meses corridos e repete essa média até dezembro. Serve para responder
+"se eu seguir neste ritmo, onde chego" — e, ao lado, quanto falta por mês para
+alcançar a meta do ano. Um mês fora da curva move a projeção inteira; ela é
+uma referência, não uma promessa.
 
 ### Como as contas são feitas
 
