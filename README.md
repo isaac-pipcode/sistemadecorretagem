@@ -108,17 +108,36 @@ e-mail.
 
 ---
 
-## As cinco abas
+## As seis abas
 
 | Aba | Para que serve |
 |---|---|
 | **Painel** | Quanto vendi no mês e no ano, tíquete médio, dias desde a última venda, gráfico dos últimos 18 meses com a linha da meta, vendas por segmento e a lista **"Para fazer hoje"**. |
 | **Funil de vendas** | Quadro com os interessados em 4 colunas: Novo contato → Reunião marcada → Proposta feita → Fechou / Perdeu. No computador dá para arrastar o cartão; no celular use o campo **"Mover para →"**. Ao mover para *Fechou*, o formulário de venda abre já preenchido. Ao mover para *Perdeu*, o sistema pergunta o motivo. |
+| **Leads** | Todo mundo que já passou pelas suas mãos, de A a Z, com um índice de letras para pular direto. Filtros de **situação** (convertido, no funil, perdido, sem movimento) e de **temperatura**. Botões de WhatsApp e **Registrar conversa**. |
 | **Vendas** | Todas as vendas, com filtros de ano, segmento e situação, busca por nome, total do período e o botão **+ Registrar venda**. Dá para corrigir e apagar qualquer registro. |
-| **Carteira** | Um cartão por cliente, do contato mais antigo para o mais novo (fila de reativação). Quem está há mais de 90 dias sem contato fica marcado em vermelho. Botões de WhatsApp, **Registrar conversa** e edição da próxima ação. |
+| **Carteira** | Só quem tem cota **Ativa** ou **Contemplada** — quem desistiu fica em *Leads*. Um cartão por cliente, do contato mais antigo para o mais novo (fila de reativação). Quem está há mais de 90 dias sem contato fica marcado em vermelho. Botões de WhatsApp, **Registrar conversa** e edição da próxima ação. |
 | **Minha semana** | Contadores de contatos, reuniões e propostas com botões **+1**, comparação com os alvos da semana (27 / 11 / 7) e gráfico das últimas 12 semanas. |
 
 O medidor da meta do mês fica no topo, em todas as abas.
+
+### Leads e Carteira são a mesma lista, vista de dois jeitos
+
+`clientes` é a lista de **pessoas** — é ela que a aba Leads mostra inteira.
+`leads` é a passagem pelo funil e aponta para a pessoa; `vendas` também. A
+Carteira é um recorte dessa lista: só quem tem venda Ativa ou Contemplada.
+
+A **temperatura** sai sozinha do tempo desde o último contato — que é a data
+mais recente entre a última conversa anotada e a última venda:
+
+| | |
+|---|---|
+| **Quente** | falou faz até 30 dias |
+| **Morno** | de 30 a 90 dias |
+| **Frio** | mais de 90 dias, ou nunca houve contato |
+
+Registrar uma conversa esquenta a pessoa de novo — por isso o botão aparece
+nas duas abas.
 
 ### Como as contas são feitas
 
@@ -230,6 +249,8 @@ como sendo da primeira consultora tudo o que já estiver no banco):
    antes de rodar, se quiser outra).
 4. `db/004_multi_consultora.sql` — separa os dados por consultora. Pode ser
    rodado de novo quando quiser, sem estragar nada.
+5. `db/006_leads.sql` — liga o funil à lista de pessoas, que é o que a aba
+   Leads mostra. Também pode ser rodado de novo.
 
 Consultora nova não entra por SQL: quem cadastra é a função
 `convidar-consultora` (veja *Uma consultora por conta*). O

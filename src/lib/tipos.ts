@@ -43,6 +43,32 @@ export const MOTIVOS_PERDA = [
   "Outro motivo",
 ] as const;
 
+/**
+ * Temperatura pelo tempo sem contato — o sistema calcula, ela não marca nada.
+ * O corte de 90 dias é o mesmo que a Carteira já usava no aviso vermelho.
+ */
+export const TEMPERATURAS = ["Quente", "Morno", "Frio"] as const;
+export type Temperatura = (typeof TEMPERATURAS)[number];
+
+export const DIAS_QUENTE = 30;
+export const DIAS_MORNO = 90;
+
+export function temperaturaPor(diasSemContato: number | null): Temperatura {
+  if (diasSemContato === null) return "Frio"; // nunca houve contato
+  if (diasSemContato <= DIAS_QUENTE) return "Quente";
+  if (diasSemContato <= DIAS_MORNO) return "Morno";
+  return "Frio";
+}
+
+/** Onde a pessoa está na vida comercial dela. */
+export const SITUACOES = [
+  "Convertido",
+  "No funil",
+  "Perdido",
+  "Sem movimento",
+] as const;
+export type Situacao = (typeof SITUACOES)[number];
+
 export type Venda = {
   id: string;
   cliente_id: string | null;
@@ -71,6 +97,7 @@ export type Cliente = {
 
 export type Lead = {
   id: string;
+  cliente_id: string | null;
   nome: string;
   telefone: string | null;
   segmento: string | null;

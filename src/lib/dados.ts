@@ -12,11 +12,15 @@ import {
   META_MENSAL_PADRAO,
   METAS_SEMANAIS_PADRAO,
   SEGMENTOS,
+  temperaturaPor,
   type Cliente,
+  type Etapa,
   type Lead,
   type MetasSemanais,
   type Segmento,
   type Semana,
+  type Situacao,
+  type Temperatura,
   type Venda,
 } from "@/lib/tipos";
 
@@ -283,57 +287,133 @@ export function pendenciasDeHoje(
   return pendencias.sort((a, b) => a.data.localeCompare(b.data));
 }
 
-export type LinhaCarteira = {
+export type LinhaDiretorio = {
   cliente: Cliente;
   segmentos: string[];
+  /** Cotas convertidas (Ativa ou Contemplada). */
   cotas: number;
+  /** Só o que virou negócio de verdade — é o número que a Carteira mostra. */
   valorTotal: number;
+  /** O que ainda é expectativa, vindo do funil. */
+  valorEstimado: number | null;
   ultimoNegocio: string | null;
   statusCotas: string[];
   ultimoContato: string | null;
   diasSemContato: number | null;
+  temperatura: Temperatura;
+  situacao: Situacao;
+  etapa: Etapa | null;
+  motivoPerda: string | null;
 };
 
-/** Uma linha por cliente, com o que veio das vendas + o que a usuária anotou. */
-export function montarCarteira(
+export type LinhaCarteira = LinhaDiretorio;
+
+/** Venda que conta como convertida — as outras não entram na Carteira. */
+export function convertidas(vendas: Venda[]): Venda[] {
+  return vendas.filter(
+    (v) => v.status === "Ativa" || v.status === "Contemplada",
+  );
+}
+
+/** A data mais recente entre duas — qualquer uma pode ser nula. */
+function maisRecente(a: string | null, b: string | null): string | null {
+  if (!a) return b;
+  if (!b) return a;
+  return a > b ? a : b;
+}
+
+/**
+ * Uma linha por PESSOA, em ordem alfabética — é o que a aba Leads mostra.
+ *
+ * Junta os três lados que antes não se falavam: o cadastro da pessoa, as
+ * vendas dela e a passagem pelo funil. A Carteira é um recorte disto.
+ */
+export function montarDiretorio(
   clientes: Cliente[],
   vendas: Venda[],
+  leads: Lead[],
   hoje: string,
-): LinhaCarteira[] {
-  const porCliente = new Map<string, Venda[]>();
+): LinhaDiretorio[] {
+  const vendasPor = new Map<string, Venda[]>();
   for (const v of vendas) {
-    const chave = v.cliente_id ?? `nome:${v.nome_cliente}`;
-    porCliente.set(chave, [...(porCliente.get(chave) ?? []), v]);
+    if (!v.cliente_id) continue;
+    vendasPor.set(v.cliente_id, [...(vendasPor.get(v.cliente_id) ?? []), v]);
+  }
+
+  // Um lead por pessoa: o mais recente manda, é o estado atual dela no funil.
+  const leadPor = new Map<string, Lead>();
+  for (const l of leads) {
+    if (!l.cliente_id) continue;
+    const atual = leadPor.get(l.cliente_id);
+    if (!atual || l.atualizado_em > atual.atualizado_em) {
+      leadPor.set(l.cliente_id, l);
+    }
   }
 
   const linhas = clientes.map((cliente) => {
-    const doCliente = valem(porCliente.get(cliente.id) ?? []);
+    const todas = valem(vendasPor.get(cliente.id) ?? []);
+    const fechadas = convertidas(todas);
+    const lead = leadPor.get(cliente.id) ?? null;
+
     const ultimoNegocio =
-      doCliente.length > 0
-        ? doCliente.reduce(
-            (max, v) => (v.data_venda > max ? v.data_venda : max),
-            doCliente[0].data_venda,
-          )
+      todas.length > 0
+        ? todas.reduce((max, v) => (v.data_venda > max ? v.data_venda : max), "")
         : null;
-    const ultimoContato = cliente.ultima_conversa ?? ultimoNegocio;
+
+    // Última venda também é contato: se ela vendeu depois da última conversa
+    // anotada, não faz sentido dizer que está sem falar com a pessoa.
+    const ultimoContato = maisRecente(
+      cliente.ultima_conversa,
+      ultimoNegocio || null,
+    );
+    const diasSemContato = ultimoContato ? diasEntre(ultimoContato, hoje) : null;
+
+    let situacao: Situacao;
+    if (fechadas.length > 0) situacao = "Convertido";
+    else if (lead && lead.etapa !== "Perdeu" && lead.etapa !== "Fechou")
+      situacao = "No funil";
+    else if (lead?.etapa === "Perdeu" || todas.length > 0) situacao = "Perdido";
+    else situacao = "Sem movimento";
+
     return {
       cliente,
-      segmentos: [...new Set(doCliente.map((v) => v.segmento))],
-      cotas: doCliente.length,
-      valorTotal: somar(doCliente),
+      segmentos: [...new Set(fechadas.map((v) => v.segmento))],
+      cotas: fechadas.length,
+      valorTotal: somar(fechadas),
+      valorEstimado: lead?.valor_estimado ?? null,
       ultimoNegocio,
-      statusCotas: [...new Set(doCliente.map((v) => v.status))],
+      statusCotas: [...new Set(fechadas.map((v) => v.status))],
       ultimoContato,
-      diasSemContato: ultimoContato ? diasEntre(ultimoContato, hoje) : null,
+      diasSemContato,
+      temperatura: temperaturaPor(diasSemContato),
+      situacao,
+      etapa: lead?.etapa ?? null,
+      motivoPerda: lead?.motivo_perda ?? null,
     };
   });
 
-  // Fila de reativação: quem está há mais tempo sem contato aparece primeiro.
-  return linhas.sort((a, b) => {
-    const ca = a.ultimoContato ?? "0000-00-00";
-    const cb = b.ultimoContato ?? "0000-00-00";
-    return ca.localeCompare(cb);
-  });
+  return linhas.sort((a, b) =>
+    a.cliente.nome.localeCompare(b.cliente.nome, "pt-BR"),
+  );
+}
+
+/**
+ * A Carteira: só quem tem venda convertida, na fila de reativação — quem está
+ * há mais tempo sem contato aparece primeiro.
+ */
+export function montarCarteira(
+  clientes: Cliente[],
+  vendas: Venda[],
+  leads: Lead[],
+  hoje: string,
+): LinhaCarteira[] {
+  return montarDiretorio(clientes, vendas, leads, hoje)
+    .filter((l) => l.situacao === "Convertido")
+    .sort((a, b) =>
+      (a.ultimoContato ?? "0000-00-00").localeCompare(
+        b.ultimoContato ?? "0000-00-00",
+      ),
+    );
 }
 
 /** Últimas `n` semanas (segundas-feiras), da mais antiga para a mais recente. */

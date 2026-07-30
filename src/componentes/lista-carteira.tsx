@@ -5,14 +5,10 @@ import { useActionState, useEffect, useMemo, useState } from "react";
 import { Aviso } from "@/componentes/aviso";
 import { BotaoEnviar } from "@/componentes/botao-enviar";
 import { BotaoWhatsapp } from "@/componentes/botao-whatsapp";
-import {
-  CampoData,
-  CampoNota,
-  CampoTelefone,
-  CampoTexto,
-} from "@/componentes/campos";
+import { CampoData, CampoTelefone, CampoTexto } from "@/componentes/campos";
+import { FormularioConversa } from "@/componentes/formulario-conversa";
 import { Janela } from "@/componentes/janela";
-import { registrarConversa, salvarCliente, type Resultado } from "@/lib/acoes";
+import { salvarCliente, type Resultado } from "@/lib/acoes";
 import { dataBr, numero, reais, telefoneBr } from "@/lib/formato";
 
 export type ItemCarteira = {
@@ -55,11 +51,15 @@ export function ListaCarteira({ itens }: Props) {
 
       <div className="carta bg-marca-clara p-4">
         <p className="font-bold">
-          {numero(itens.length)} clientes na carteira.
+          {numero(itens.length)} clientes com cota ativa ou contemplada.
         </p>
         <p className="numeros font-bold text-tinta-suave">
           {numero(esfriando)} sem contato há mais de 90 dias — comece por eles,
           estão no topo da lista.
+        </p>
+        <p className="mt-1 text-tinta-suave">
+          Aqui entra só quem comprou. Quem desistiu, quem está no funil e quem
+          nunca fechou ficam na aba <strong>Leads</strong>.
         </p>
       </div>
 
@@ -198,58 +198,6 @@ export function ListaCarteira({ itens }: Props) {
         </Janela>
       ) : null}
     </div>
-  );
-}
-
-function FormularioConversa({
-  clienteId,
-  aoConcluir,
-}: {
-  clienteId: string;
-  aoConcluir: () => void;
-}) {
-  const [resultado, acao] = useActionState<Resultado | null, FormData>(
-    registrarConversa,
-    null,
-  );
-
-  useEffect(() => {
-    if (resultado?.ok) {
-      const espera = setTimeout(aoConcluir, 900);
-      return () => clearTimeout(espera);
-    }
-  }, [resultado, aoConcluir]);
-
-  return (
-    <form action={acao} className="space-y-4">
-      <input type="hidden" name="cliente_id" value={clienteId} />
-      <p className="text-tinta-suave">
-        A data de hoje entra sozinha. Escreva só o que foi conversado.
-      </p>
-      <CampoNota
-        nome="nota"
-        rotulo="O que foi conversado"
-        placeholder="Ex.: liguei, ela vai pensar na cota de imóvel para janeiro"
-        linhas={4}
-      />
-      {resultado ? (
-        <Aviso tipo={resultado.ok ? "sucesso" : "erro"}>
-          {resultado.mensagem}
-        </Aviso>
-      ) : null}
-      <div className="flex flex-col gap-2 sm:flex-row-reverse">
-        <BotaoEnviar className="botao-base botao-principal w-full text-lg sm:w-auto">
-          Salvar conversa
-        </BotaoEnviar>
-        <button
-          type="button"
-          onClick={aoConcluir}
-          className="botao-base botao-neutro w-full sm:w-auto"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
   );
 }
 

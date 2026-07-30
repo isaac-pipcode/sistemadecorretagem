@@ -3,16 +3,18 @@ import {
   hojeIso,
   listarClientes,
   listarConversas,
+  listarLeads,
   listarVendas,
   montarCarteira,
 } from "@/lib/dados";
 
 export default async function PaginaCarteira() {
   const hoje = hojeIso();
-  const [clientes, vendas, conversas] = await Promise.all([
+  const [clientes, vendas, conversas, leads] = await Promise.all([
     listarClientes(),
     listarVendas(),
     listarConversas(),
+    listarLeads(),
   ]);
 
   const ultimaNota = new Map<string, string | null>();
@@ -20,7 +22,7 @@ export default async function PaginaCarteira() {
     if (!ultimaNota.has(c.cliente_id)) ultimaNota.set(c.cliente_id, c.nota);
   }
 
-  const itens: ItemCarteira[] = montarCarteira(clientes, vendas, hoje).map(
+  const itens: ItemCarteira[] = montarCarteira(clientes, vendas, leads, hoje).map(
     (linha) => ({
       id: linha.cliente.id,
       nome: linha.cliente.nome,
