@@ -24,7 +24,35 @@ Tudo em português, pensado para celular, com letra grande e botões grandes.
 > "esqueci minha senha" (é possível redefinir pelo painel do Supabase, em
 > *Authentication → Users*).
 
-Não existe cadastro público. O sistema é de uma usuária só.
+Não existe tela de cadastro público: as contas são criadas por quem administra
+o sistema (veja *Uma consultora por conta*, abaixo).
+
+---
+
+## Uma consultora por conta
+
+Cada consultora entra com o e-mail dela e vê **só os dados dela** — as próprias
+vendas, os próprios interessados, a própria carteira, as próprias metas. Duas
+consultoras podem ter um cliente com o mesmo nome sem uma atrapalhar a outra.
+
+Isso não depende do código do site: cada linha do banco tem uma coluna
+`consultora_id` que já nasce preenchida com quem está logado, e o Postgres só
+devolve as linhas em que ela bate (*Row Level Security*). Uma tela nova não tem
+como esquecer o filtro — mesmo se o código pedisse "todas as vendas", o banco
+devolveria só as da consultora da vez.
+
+**Cadastrar uma consultora nova:** abra `db/005_nova_consultora.sql`, troque as
+três linhas marcadas com `<<<` (e-mail, senha inicial e nome) e rode no SQL
+Editor do Supabase. Ela entra com uma tela em branco e troca a senha em
+*Minha conta*.
+
+**Apagar uma consultora:** `delete from auth.users where email = '...'` remove
+a conta e, junto, tudo o que era dela.
+
+> No Supabase, em *Authentication → Sign In / Providers → Email*, mantenha
+> **Allow new users to sign up** desligado. Sem isso qualquer pessoa consegue
+> criar uma conta sozinha — não veria dado de ninguém, mas entraria no sistema.
+> Com o cadastro desligado, só entra quem você cadastrar.
 
 ---
 
@@ -137,14 +165,18 @@ o arquivo.
 
 ## Montar o banco do zero
 
-No SQL Editor do Supabase, rode nesta ordem:
+No SQL Editor do Supabase, rode **nesta ordem** (a do 004 importa: ele carimba
+como sendo da primeira consultora tudo o que já estiver no banco):
 
-1. `db/001_estrutura.sql` — tabelas, índices e RLS ("usuária autenticada acessa
-   tudo").
+1. `db/001_estrutura.sql` — tabelas e índices.
 2. `db/002_seed.sql` — as 52 vendas transcritas dos cadernos, as metas e a
    Carteira deduplicada por nome.
 3. `db/003_usuaria.sql` — a conta de acesso (troque a senha inicial no arquivo
    antes de rodar, se quiser outra).
+4. `db/004_multi_consultora.sql` — separa os dados por consultora. Pode ser
+   rodado de novo quando quiser, sem estragar nada.
+
+Depois, `db/005_nova_consultora.sql` cadastra cada consultora nova.
 
 Os dados originais das vendas também estão em `db/vendas-caderno.json`.
 
@@ -178,14 +210,21 @@ do banco garante que cada consultora só enxergue os dados dela.
 
 Fica em *Settings → Deployment Protection*, caso queira conferir.
 
-**Uma recomendação de segurança**
+**O repositório é público**
 
-No Supabase, em *Authentication → Sign In / Providers → Email*, desligue
-**Allow new users to sign up**. O sistema é de uma usuária só e não tem tela de
-cadastro; com o cadastro desligado, ninguém consegue criar conta por fora. As
-políticas de RLS já conferem o e-mail da consultora, então mesmo uma conta
-criada por fora não enxergaria nenhum dado — a recomendação é só uma segunda
-tranca.
+`isaac-pipcode/sistemadecorretagem` é um repositório público, e as duas chaves
+do Supabase estão nele. É seguro *porque* são chaves publicáveis: elas só dão
+acesso a quem consegue fazer login, e o RLS limita cada login aos dados da
+própria consultora. Duas coisas seguem valendo:
+
+- **Nunca** comitar a chave de serviço (*service_role*) — essa ignora o RLS.
+- Manter **Allow new users to sign up** desligado no Supabase
+  (*Authentication → Sign In / Providers → Email*). Com o repositório público,
+  qualquer pessoa consegue as chaves; o que impede alguém de criar uma conta é
+  esse botão. Mesmo criando, não veria dado de ninguém — mas entraria.
+
+Se preferir fechar o repositório, nada quebra: a Vercel continua publicando
+igual.
 
 ---
 

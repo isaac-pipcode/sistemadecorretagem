@@ -4,7 +4,13 @@ import { Abas } from "@/componentes/abas";
 import { Marca } from "@/componentes/marca";
 import { MedidorMeta } from "@/componentes/medidor-meta";
 import { sair } from "@/lib/acoes";
-import { carregarMetas, hojeIso, listarVendas, resumoDoMes } from "@/lib/dados";
+import {
+  carregarMetas,
+  carregarPerfil,
+  hojeIso,
+  listarVendas,
+  resumoDoMes,
+} from "@/lib/dados";
 import { nomeMes } from "@/lib/formato";
 
 export default async function LayoutApp({
@@ -13,9 +19,10 @@ export default async function LayoutApp({
   children: React.ReactNode;
 }) {
   const hoje = hojeIso();
-  const [vendas, { metaMensal }] = await Promise.all([
+  const [vendas, { metaMensal }, perfil] = await Promise.all([
     listarVendas(),
     carregarMetas(),
+    carregarPerfil(),
   ]);
   const mes = resumoDoMes(vendas, hoje);
   const [ano, numeroMes] = hoje.slice(0, 7).split("-");
@@ -49,9 +56,16 @@ export default async function LayoutApp({
             </div>
           </div>
 
-          <p className="mt-3 font-bold text-white/80 first-letter:uppercase">
-            {nomeMes(Number(numeroMes))} de {ano}
-          </p>
+          {/* Mês corrente e de quem é esta tela — com várias consultoras no
+              mesmo sistema, o nome evita dúvida sobre de quem são os números. */}
+          <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4">
+            <p className="font-bold text-white/80 first-letter:uppercase">
+              {nomeMes(Number(numeroMes))} de {ano}
+            </p>
+            {perfil ? (
+              <p className="font-bold text-white/80">{perfil.nome}</p>
+            ) : null}
+          </div>
           <div className="mt-1.5">
             <MedidorMeta
               valor={mes.valor}

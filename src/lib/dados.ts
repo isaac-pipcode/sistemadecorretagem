@@ -27,6 +27,40 @@ export type Conversa = {
   nota: string | null;
 };
 
+export type Perfil = {
+  id: string;
+  nome: string;
+  cidade: string | null;
+  email: string;
+};
+
+/**
+ * Quem está usando o sistema agora.
+ *
+ * Não precisa filtrar por id: o RLS só devolve o perfil de quem está logado.
+ * Vale para todas as leituras deste arquivo — cada consultora enxerga apenas
+ * as próprias linhas, e isso é garantido pelo banco, não pelo código.
+ */
+export async function carregarPerfil(): Promise<Perfil | null> {
+  const supabase = await criarClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from("consultoras")
+    .select("id, nome, cidade")
+    .maybeSingle();
+
+  return {
+    id: user.id,
+    nome: data?.nome?.trim() || "Consultora",
+    cidade: data?.cidade ?? null,
+    email: user.email ?? "",
+  };
+}
+
 /** Vendas contam para os totais, exceto as marcadas como 'Inválida'. */
 export function valem(vendas: Venda[]): Venda[] {
   return vendas.filter((v) => v.status !== "Inválida");

@@ -98,6 +98,26 @@ export async function sair() {
   redirect("/entrar");
 }
 
+export async function salvarPerfil(
+  _anterior: Resultado | null,
+  formData: FormData,
+): Promise<Resultado> {
+  const { supabase, user } = await exigirUsuaria();
+
+  const nome = texto(formData, "nome");
+  if (nome.length < 2) return ERRO("Escreva o seu nome.");
+
+  const { error } = await supabase
+    .from("consultoras")
+    .update({ nome, cidade: textoOuNulo(formData, "cidade") })
+    .eq("id", user.id);
+
+  if (error) return ERRO("Não deu para salvar o nome. Tente de novo.");
+
+  atualizarTelas();
+  return OK("Nome salvo!");
+}
+
 export async function trocarSenha(
   _anterior: Resultado | null,
   formData: FormData,
