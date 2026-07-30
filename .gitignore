@@ -42,3 +42,6 @@ next-env.d.ts
 
 # arquivo de exemplo deve ser versionado
 !.env.example
+# chaves públicas do Supabase — versionadas para a Vercel publicar direto do
+# GitHub sem configuração manual. Não contêm segredo (veja o próprio arquivo).
+!.env.production

@@ -119,9 +119,19 @@ npm install
 npm run dev     # abre em http://localhost:3000
 ```
 
-Na Vercel, as mesmas duas variáveis precisam estar em
-*Project → Settings → Environment Variables*, nos ambientes **Production**,
-**Preview** e **Development**.
+Na Vercel não é preciso cadastrar nada: as duas ficam no arquivo
+`.env.production`, que **está versionado de propósito**. São chaves
+*publicáveis* — o Next.js as embute no JavaScript do navegador, então já são
+visíveis para qualquer visitante; não são segredo. O que protege os dados é o
+login mais o RLS do banco.
+
+Se preferir cadastrá-las em *Project → Settings → Environment Variables*
+(Production, Preview e Development), os valores do painel têm prioridade sobre
+o arquivo.
+
+> A chave de serviço (*service_role*) do Supabase **nunca** pode ir para o
+> repositório nem para o navegador: ela ignora o RLS. O sistema não usa essa
+> chave em lugar nenhum.
 
 ---
 
@@ -146,32 +156,27 @@ Os dados originais das vendas também estão em `db/vendas-caderno.json`.
 
 ## Publicar na Vercel
 
-O projeto **já está publicado** em
-<https://minhas-vendas-consorcios.vercel.app> (time `pipcode`, projeto
-`minhas-vendas-consorcios`). As duas variáveis de ambiente estão no arquivo
-`.env.production`, que vai junto no deploy — são chaves públicas, protegidas
-pelo login e pelo RLS do banco. Se preferir guardá-las no painel da Vercel
-(*Settings → Environment Variables*), elas têm prioridade sobre o arquivo.
+O projeto está publicado em <https://minhas-vendas-consorcios.vercel.app>
+(time `pipcode`, projeto `minhas-vendas-consorcios`) e o repositório
+`isaac-pipcode/sistemadecorretagem` está ligado à Vercel.
 
-**Ligar o repositório do GitHub (recomendado, faz uma vez só)**
+**Como publicar uma mudança**
 
-O projeto foi criado enviando os arquivos direto para a Vercel, então ele ainda
-não publica sozinho a cada `git push`. Para ligar:
+`git push` na branch `main`. A Vercel compila e publica sozinha, em uns dois
+minutos. Push em qualquer outra branch gera um *preview* (endereço próprio,
+sem mexer no que está no ar).
 
-1. Painel da Vercel → projeto `minhas-vendas-consorcios` → *Settings* → *Git*.
-2. **Connect Git Repository** → escolha `isaac-pipcode/sistemadecorretagem`.
-3. Escolha a branch de produção.
+Se precisar publicar sem push: painel → *Deployments* → três pontinhos do
+último deploy → **Redeploy**.
 
-Feito isso, todo `git push` publica sozinho.
+**Quem pode abrir o endereço**
 
-**Publicar de novo depois de uma mudança (re-deploy)**
+A *Vercel Authentication* (a trava que exigia conta na Vercel para abrir o
+site) está **desligada** neste projeto. Tem que estar: quem usa o sistema não
+tem conta na Vercel. A porta de entrada é o login do próprio sistema, e o RLS
+do banco garante que cada consultora só enxergue os dados dela.
 
-- Com o Git ligado: `git push` — a Vercel publica sozinha.
-- Pelo painel: *Deployments* → três pontinhos do último deploy → **Redeploy**.
-- Pela linha de comando: `npx vercel --prod` dentro da pasta do projeto.
-
-Se mudar alguma variável de ambiente pelo painel, é preciso **re-deployar**
-para ela valer.
+Fica em *Settings → Deployment Protection*, caso queira conferir.
 
 **Uma recomendação de segurança**
 
